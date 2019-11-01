@@ -1,0 +1,40 @@
+前端       
+====================================================================================
+	   //類別 change事件
+        $("#REASONTYPE").change(function () {
+            var selVal = $("#REASONTYPE").val();
+
+            if (selVal == "") {
+                $('#REASONCODE').empty();
+            }
+            else {
+                $.ajax({
+                    url: '@Url.Action("GetREASONCODE", "MtnNcase")',
+                    data: { _strTYPE: selVal },
+                    type: 'post',
+                    cache: false,
+                    async: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#REASONCODE').empty();
+
+                        if (data.length > 0) {
+                            $('#REASONCODE').append($('<option></option>').val('').text('-請選擇-'));
+                            $.each(data, function (i, item) {
+                                $('#REASONCODE').append($('<option></option>').val(item.Value).text(item.Text));
+                            });
+                        }
+                    }
+                });
+            }
+        });
+		
+
+Controller       
+====================================================================================
+        public JsonResult GetREASONCODE(string _strTYPE)
+        {
+            List<SelectListItem> RtnSelectList = Common.GetDetailReasonSelList(_strTYPE);
+
+            return Json(RtnSelectList, JsonRequestBehavior.AllowGet);
+        }		
